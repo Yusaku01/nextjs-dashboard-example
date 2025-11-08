@@ -1,5 +1,5 @@
 import postgres from "postgres";
-import {
+import type {
   CustomerField,
   CustomersTableType,
   InvoiceForm,
@@ -7,9 +7,10 @@ import {
   LatestInvoiceRaw,
   Revenue,
 } from "./definitions";
+import { POSTGRES_URL } from "./env";
 import { formatCurrency } from "./utils";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+const sql = postgres(POSTGRES_URL, { ssl: "require" });
 
 export async function fetchRevenue() {
   try {
@@ -88,7 +89,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
-  currentPage: number
+  currentPage: number,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 

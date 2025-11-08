@@ -17,6 +17,9 @@ const config: StorybookConfig = {
       nextImage: { unoptimized: true }
     }
   },
+  core: {
+    builder: '@storybook/builder-webpack5',
+  },
   // Ensure Storybook uses the project's Webpack v5 instance
   // instead of Next.js' compiled Webpack to avoid hook mismatches.
   webpackFinal: async (config) => {
@@ -25,8 +28,14 @@ const config: StorybookConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      'next/dist/compiled/webpack/webpack': require.resolve('webpack')
+      // Force any reference to Next's compiled webpack to use the project's webpack
+      'next/dist/compiled/webpack/webpack': require.resolve('webpack'),
+      'next/dist/compiled/webpack': require.resolve('webpack'),
+      webpack: require.resolve('webpack')
     };
+
+    // Ensure Webpack cache API exists to avoid undefined hooks in builder
+    config.cache = { type: 'filesystem' } as any;
 
     return config;
   },
@@ -37,3 +46,4 @@ const config: StorybookConfig = {
 };
 
 export default config;
+
